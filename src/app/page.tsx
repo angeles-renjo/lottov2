@@ -115,8 +115,8 @@ export default function Home() {
       <div className="space-y-6">
         <LottoDisplay initialData={lottoDisplayData} />
         <PrizePool initialData={prizePoolData} />
-        <LegalDisclaimer />
         <LottoCheckInfo />
+        <LegalDisclaimer />
       </div>
     </motion.main>
   );
