@@ -4,6 +4,7 @@ import LottoDisplay from "@/components/LottoDisplay";
 import PrizePool from "@/components/PrizePool";
 import { motion, AnimatePresence } from "framer-motion";
 import { LottoGameType, LOTTO_GAMES } from "@/lib/types";
+import LegalDisclaimer from "@/components/LegalDisclaimer";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -95,6 +96,7 @@ export default function Home() {
       <div className="space-y-6">
         <LottoDisplay initialData={data?.lottoDisplay} />
         <PrizePool initialData={data?.prizePool} />
+        <LegalDisclaimer />
       </div>
     </motion.main>
   );
