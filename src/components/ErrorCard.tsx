@@ -1,7 +1,7 @@
 // ErrorCard.tsx
 import { motion } from "framer-motion";
 import { Card, CardContent } from "./ui/card";
-export function ErrorCard({ error }: { error: string }) {
+export default function ErrorCard({ error }: { error: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

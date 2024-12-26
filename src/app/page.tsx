@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { LottoGameType, LottoResult } from "@/lib/types";
 import HomePageSkeleton from "@/components/Skeleton/HomePageSkeleton";
-import { Card, CardContent } from "@/components/ui/card";
+import ErrorCard from "@/components/ErrorCard";
 import LottoDisplay from "@/components/LottoDisplay";
 import PrizePool from "@/components/PrizePool";
 import LottoCheckInfo from "@/components/CheckInformation";
@@ -95,18 +95,6 @@ function usePrizePoolData() {
   return { prizePoolData, isLoading, error };
 }
 
-// Components
-
-function ErrorDisplay({ error }: { error: string }) {
-  return (
-    <Card className="bg-red-50 border-red-200">
-      <CardContent className="p-4">
-        <p className="text-red-700">{error}</p>
-      </CardContent>
-    </Card>
-  );
-}
-
 // Main Page Component
 export default function Home() {
   const {
@@ -133,7 +121,7 @@ export default function Home() {
       <h1 className="text-4xl font-bold mb-6">PCSO Lotto Results</h1>
 
       {error ? (
-        <ErrorDisplay error={error} />
+        <ErrorCard error={error} />
       ) : isLoading ? (
         <HomePageSkeleton />
       ) : (
