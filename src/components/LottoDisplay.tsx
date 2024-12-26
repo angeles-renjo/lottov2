@@ -16,12 +16,12 @@ export default function LottoDisplay({ initialData }: LottoDisplayProps) {
   const [results, setResults] = useState<LottoResult | null>(initialData);
   const [error, setError] = useState<string | null>(null);
   const [gameType, setGameType] = useState<LottoGameType>(
-    LottoGameType.GRAND_LOTTO_655
+    LottoGameType.ULTRA_LOTTO_658
   );
 
   useEffect(() => {
     // Only fetch if gameType changes and it's not the initial load
-    if (gameType === LottoGameType.GRAND_LOTTO_655 && initialData) {
+    if (gameType === LottoGameType.ULTRA_LOTTO_658 && initialData) {
       return;
     }
 

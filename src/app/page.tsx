@@ -2,45 +2,67 @@
 import { useState, useEffect } from "react";
 import LottoDisplay from "@/components/LottoDisplay";
 import PrizePool from "@/components/PrizePool";
-import { motion, AnimatePresence } from "framer-motion";
-import { LottoGameType, LOTTO_GAMES } from "@/lib/types";
+import { motion } from "framer-motion";
+import { LottoGameType, LottoResult } from "@/lib/types";
 import LegalDisclaimer from "@/components/LegalDisclaimer";
+import LottoCheckInfo from "@/components/CheckInformation";
+
+// Define the prize pool result type
+interface PrizePoolResult {
+  gameType: LottoGameType;
+  gameName: string;
+  jackpotAmount: number;
+  drawDate: Date;
+}
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<any>(null);
+  const [lottoDisplayData, setLottoDisplayData] = useState<LottoResult | null>(
+    null
+  );
+  const [prizePoolData, setPrizePoolData] = useState<PrizePoolResult[] | null>(
+    null
+  );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchAllData = async () => {
+    const fetchData = async () => {
       try {
-        const gameTypes = Object.values(LottoGameType);
+        // Fetch Lotto Display data (Ultra Lotto 6/58 as default)
+        const displayResponse = await fetch(
+          `/api/lotto/results?gameType=${encodeURIComponent(
+            LottoGameType.ULTRA_LOTTO_658
+          )}`
+        );
+        const displayData = await displayResponse.json();
 
-        const results = await Promise.all(
-          gameTypes.map(async (gameType) => {
-            const response = await fetch(
-              `/api/lotto/results?gameType=${encodeURIComponent(gameType)}`
-            );
-            const data = await response.json();
+        if (!displayData.success) {
+          throw new Error(
+            displayData.error?.message || "Failed to fetch display data"
+          );
+        }
 
-            if (!data.success) {
-              console.error(`Error fetching ${gameType}:`, data.error);
-              return null;
-            }
+        // Fetch Prize Pool data (all games)
+        const prizePoolResponse = await fetch("/api/lotto/prize");
+        const prizePoolData = await prizePoolResponse.json();
 
-            return {
-              ...data.data,
-              gameName: LOTTO_GAMES[gameType].name,
-              gameType: gameType,
-            };
-          })
+        if (!prizePoolData.success) {
+          throw new Error(
+            prizePoolData.error?.message || "Failed to fetch prize pool"
+          );
+        }
+
+        // Sort prize pool data to ensure Ultra Lotto comes first
+        const sortedPrizePoolData = prizePoolData.data.sort(
+          (a: PrizePoolResult, b: PrizePoolResult) => {
+            if (a.gameType === LottoGameType.ULTRA_LOTTO_658) return -1;
+            if (b.gameType === LottoGameType.ULTRA_LOTTO_658) return 1;
+            return 0;
+          }
         );
 
-        const validResults = results.filter((r) => r !== null);
-        setData({
-          lottoDisplay: validResults[0],
-          prizePool: validResults,
-        });
+        setLottoDisplayData(displayData.data);
+        setPrizePoolData(sortedPrizePoolData);
       } catch (err) {
         console.error("Error fetching data:", err);
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -49,10 +71,9 @@ export default function Home() {
       }
     };
 
-    fetchAllData();
+    fetchData();
   }, []);
 
-  // Show loading overlay immediately
   if (isLoading) {
     return (
       <motion.div
@@ -68,7 +89,6 @@ export default function Home() {
     );
   }
 
-  // Show error if any
   if (error) {
     return (
       <motion.div
@@ -83,7 +103,6 @@ export default function Home() {
     );
   }
 
-  // Show all content together when data is ready
   return (
     <motion.main
       className="p-6 flex flex-col gap-6"
@@ -94,9 +113,10 @@ export default function Home() {
       <h1 className="text-4xl font-bold mb-6">PCSO Lotto Results</h1>
 
       <div className="space-y-6">
-        <LottoDisplay initialData={data?.lottoDisplay} />
-        <PrizePool initialData={data?.prizePool} />
+        <LottoDisplay initialData={lottoDisplayData} />
+        <PrizePool initialData={prizePoolData} />
         <LegalDisclaimer />
+        <LottoCheckInfo />
       </div>
     </motion.main>
   );
