@@ -1,4 +1,3 @@
-// LottoDisplay.tsx
 "use client";
 import { useState, useEffect } from "react";
 import { LottoGameType, LottoResult } from "@/lib/types";
@@ -6,22 +5,29 @@ import GameSelector from "./GameSelector";
 import WinningNumber from "./WinningNumber";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { motion, AnimatePresence } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
 
-export default function LottoDisplay() {
-  const [results, setResults] = useState<LottoResult | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+interface LottoDisplayProps {
+  initialData: LottoResult | null;
+}
+
+export default function LottoDisplay({ initialData }: LottoDisplayProps) {
+  const [results, setResults] = useState<LottoResult | null>(initialData);
   const [error, setError] = useState<string | null>(null);
   const [gameType, setGameType] = useState<LottoGameType>(
     LottoGameType.GRAND_LOTTO_655
   );
 
   useEffect(() => {
+    // Only fetch if gameType changes and it's not the initial load
+    if (gameType === LottoGameType.GRAND_LOTTO_655 && initialData) {
+      return;
+    }
+
     const fetchResults = async () => {
       try {
-        setIsLoading(true);
         setError(null);
-
         const response = await fetch(
           `/api/lotto/results?gameType=${encodeURIComponent(gameType)}`
         );
@@ -31,7 +37,6 @@ export default function LottoDisplay() {
         }
 
         const data = await response.json();
-
         if (!data.success) {
           throw new Error(data.error?.message || "Failed to fetch results");
         }
@@ -40,30 +45,11 @@ export default function LottoDisplay() {
       } catch (err) {
         console.error("Fetch error:", err);
         setError(err instanceof Error ? err.message : "An error occurred");
-      } finally {
-        setIsLoading(false);
       }
     };
 
     fetchResults();
-  }, [gameType]);
-
-  const handleGameChange = (newGameType: LottoGameType) => {
-    setGameType(newGameType);
-  };
-
-  if (isLoading) {
-    return (
-      <motion.div
-        className="flex justify-center items-center min-h-[200px]"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-900"></div>
-      </motion.div>
-    );
-  }
+  }, [gameType, initialData]);
 
   if (error) {
     return (
@@ -100,24 +86,22 @@ export default function LottoDisplay() {
   return (
     <Card className="w-full">
       <CardContent className="p-6 space-y-6">
-        <GameSelector selectedGame={gameType} onGameChange={handleGameChange} />
+        <GameSelector selectedGame={gameType} onGameChange={setGameType} />
 
         <Separator className="my-4" />
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={gameType}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <WinningNumber
-              numbers={results.winningNumbers}
-              drawDate={results.drawDate}
-            />
-          </motion.div>
-        </AnimatePresence>
+        <motion.div
+          key={gameType}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+        >
+          <WinningNumber
+            numbers={results.winningNumbers}
+            drawDate={results.drawDate}
+          />
+        </motion.div>
 
         <Separator className="my-4" />
 
@@ -136,15 +120,12 @@ export default function LottoDisplay() {
             >
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Jackpot Prize:</span>
-                <span className="font-bold text-green-700">
+                <Badge
+                  variant="outline"
+                  className="text-lg text-emerald-500 px-3 py-1"
+                >
                   ₱{results.jackpotAmount.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Winners:</span>
-                <span className="font-bold">
-                  {results.winners > 0 ? results.winners : "No winners"}
-                </span>
+                </Badge>
               </div>
             </motion.div>
 
@@ -157,9 +138,9 @@ export default function LottoDisplay() {
               >
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Next Draw Prize:</span>
-                  <span className="font-bold text-blue-700">
+                  <Badge variant="secondary" className="text-sm px-3 py-1">
                     ₱{results.nextDrawPrize.toLocaleString()}
-                  </span>
+                  </Badge>
                 </div>
               </motion.div>
             )}
