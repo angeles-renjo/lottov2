@@ -12,6 +12,7 @@ export default function LegalDisclaimer() {
       transition={{ duration: 0.3 }}
     >
       <Card className="w-full bg-slate-50">
+        <h1 className="text-4xl font-bold p-8">Legal Disclaimer</h1>
         <CardContent className="p-6 space-y-4">
           <div className="flex items-start space-x-2">
             <AlertCircle className="w-5 h-5 text-gray-500 mt-1 flex-shrink-0" />
@@ -30,7 +31,7 @@ export default function LegalDisclaimer() {
                 amounts, and draw schedules, is sourced from publicly available
                 data. For official verification of results and other
                 lottery-related concerns, please visit the official PCSO website
-                at{" "}
+                at
                 <a
                   href="https://www.pcso.gov.ph"
                   target="_blank"

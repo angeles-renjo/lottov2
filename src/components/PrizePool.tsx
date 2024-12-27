@@ -87,10 +87,9 @@ const PrizePool = ({ initialData }: PrizePoolProps) => {
     <Card className="w-full">
       <h1 className="text-2xl font-bold p-4">Lotto Prize Pool</h1>
       <CardContent className="p-6 space-y-6">
-        <AnimatePresence mode="wait">
-          {results.map((result, index) => (
+        {results.map((result, index) => (
+          <AnimatePresence key={result.gameType} mode="wait">
             <motion.div
-              key={result.gameType}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -99,15 +98,15 @@ const PrizePool = ({ initialData }: PrizePoolProps) => {
             >
               <div className="space-y-2">
                 <h3 className="text-xl font-semibold">{result.gameName}</h3>
-                <p className="text-sm text-gray-500">
-                  Draw Date:{" "}
+                <Badge variant="secondary" className="text-sm text-blue-500">
+                  Draw Date:
                   {new Date(result.drawDate).toLocaleDateString("en-PH", {
                     weekday: "long",
                     year: "numeric",
                     month: "long",
                     day: "numeric",
                   })}
-                </p>
+                </Badge>
               </div>
 
               <div className="flex justify-between items-center">
@@ -122,8 +121,8 @@ const PrizePool = ({ initialData }: PrizePoolProps) => {
 
               {index < results.length - 1 && <Separator className="my-4" />}
             </motion.div>
-          ))}
-        </AnimatePresence>
+          </AnimatePresence>
+        ))}
       </CardContent>
     </Card>
   );

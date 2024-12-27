@@ -118,7 +118,7 @@ export default function Home() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <h1 className="text-4xl font-bold mb-6">PCSO Lotto Results</h1>
+      <h1 className="text-4xl font-bold ">PCSO Lotto Results</h1>
 
       {error ? (
         <ErrorCard error={error} />

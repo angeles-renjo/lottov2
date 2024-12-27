@@ -1,4 +1,5 @@
 import { WinningNumberProps } from "@/lib/types";
+import { Badge } from "./ui/badge";
 
 export default function WinningNumber({
   numbers,
@@ -7,15 +8,15 @@ export default function WinningNumber({
 }: WinningNumberProps) {
   return (
     <div className="space-y-2">
-      <div className="text-sm text-gray-500">
+      <Badge variant="secondary" className="text-sm text-gray-500">
         Draw Date: {new Date(drawDate).toLocaleDateString()}
-      </div>
-      <div className="flex flex-wrap gap-3">
+      </Badge>
+      <div className="flex flex-wrap justify-around">
         {numbers.map((number, index) => (
           <div
             key={index}
             className={`
-              relative w-16 h-16 rounded-full
+              relative w-24 h-24 rounded-full
               flex items-center justify-center
               ${
                 highlightedNumbers.includes(number)

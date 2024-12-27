@@ -111,20 +111,24 @@ export default function LottoDisplay({ initialData }: LottoDisplayProps) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="">
             <motion.div
               className="space-y-2"
               initial={{ x: -20 }}
               animate={{ x: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Jackpot Prize:</span>
-                <Badge
-                  variant="outline"
-                  className="text-lg text-emerald-500 px-3 py-1"
-                >
-                  ₱{results.jackpotAmount.toLocaleString()}
+              <div className="flex flex-col w-full items-center justify-around gap-2">
+                <Badge variant="outline">
+                  <div className="text-gray-600 font-bold text-lg flex items-center gap-2">
+                    Jackpot Prize:
+                    <span className="text-emerald-500">
+                      ₱{results.jackpotAmount.toLocaleString()}
+                    </span>
+                  </div>
+                </Badge>
+                <Badge variant="outline">
+                  <div className="text-lg">Winner: {results.winners}</div>
                 </Badge>
               </div>
             </motion.div>
