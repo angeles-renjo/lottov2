@@ -132,22 +132,6 @@ export default function LottoDisplay({ initialData }: LottoDisplayProps) {
                 </Badge>
               </div>
             </motion.div>
-
-            {results.nextDrawPrize && (
-              <motion.div
-                className="space-y-2"
-                initial={{ x: 20 }}
-                animate={{ x: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Next Draw Prize:</span>
-                  <Badge variant="secondary" className="text-sm px-3 py-1">
-                    ₱{results.nextDrawPrize.toLocaleString()}
-                  </Badge>
-                </div>
-              </motion.div>
-            )}
           </div>
         </motion.div>
       </CardContent>
