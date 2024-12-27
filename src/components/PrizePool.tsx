@@ -88,7 +88,7 @@ const PrizePool = ({ initialData }: PrizePoolProps) => {
 
   return (
     <Card className="w-full">
-      <h1 className="text-2xl font-bold p-4">Lotto Prize Pool</h1>
+      <h1 className="text-4xl font-bold p-4 text-center">Lotto Prize Pool</h1>
       <CardContent className="p-6 space-y-6">
         {results.map((result, index) => (
           <AnimatePresence key={result.gameType} mode="wait">
