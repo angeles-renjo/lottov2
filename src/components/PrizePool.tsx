@@ -1,9 +1,12 @@
+// src/components/PrizePool.tsx
+
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { LottoGameType } from "@/lib/types";
+import { getNextDrawDate } from "@/lib/lottoSchedule";
 
 interface PrizePoolResult {
   gameType: LottoGameType;
@@ -98,15 +101,32 @@ const PrizePool = ({ initialData }: PrizePoolProps) => {
             >
               <div className="space-y-2">
                 <h3 className="text-xl font-semibold">{result.gameName}</h3>
-                <Badge variant="secondary" className="text-sm text-blue-500">
-                  Draw Date:
-                  {new Date(result.drawDate).toLocaleDateString("en-PH", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </Badge>
+                <div className="flex flex-col gap-2">
+                  <Badge variant="destructive" className="text-sm w-fit">
+                    Last Draw:{" "}
+                    {new Date(result.drawDate).toLocaleDateString("en-PH", {
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </Badge>
+                  <Badge
+                    variant="secondary"
+                    className="text-sm text-blue-500 w-fit"
+                  >
+                    Next Draw:{" "}
+                    {getNextDrawDate(result.gameType).toLocaleDateString(
+                      "en-PH",
+                      {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      }
+                    )}
+                  </Badge>
+                </div>
               </div>
 
               <div className="flex justify-between items-center">
