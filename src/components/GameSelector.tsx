@@ -86,13 +86,13 @@ const GameSelector = ({ selectedGame, onGameChange }: GameSelectorProps) => {
                 <div>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">Every:</span>
+                      <span className="text-lg text-gray-600">Every:</span>
                       <div className="flex flex-wrap gap-2">
                         {DRAW_SCHEDULES[selectedGame].map((day) => (
                           <Badge
                             key={day}
                             variant="secondary"
-                            className="bg-blue-50 hover:bg-blue-100 text-blue-700"
+                            className="bg-blue-50 hover:bg-blue-100 text-blue-700 text-md"
                           >
                             {day}
                           </Badge>
@@ -100,10 +100,10 @@ const GameSelector = ({ selectedGame, onGameChange }: GameSelectorProps) => {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">Time:</span>
+                      <span className="text-lg text-gray-600">Time:</span>
                       <Badge
                         variant="secondary"
-                        className="bg-gray-100 hover:bg-gray-200 text-gray-700"
+                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-lg"
                       >
                         9:00 PM
                       </Badge>
