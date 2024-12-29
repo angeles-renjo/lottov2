@@ -139,3 +139,15 @@ export interface WinningNumberProps {
 
 export type DateString = string;
 export type Currency = number;
+
+//checker
+export interface NumberCheckerProps {
+  gameType: LottoGameType;
+  winningNumbers: number[];
+  drawDate: Date;
+}
+
+export interface CheckResult {
+  matches: number[];
+  prizeCategory?: string;
+}

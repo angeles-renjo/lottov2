@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
+import NumberChecker from "./NumberChecker";
 
 interface LottoDisplayProps {
   initialData: LottoResult | null;
@@ -99,6 +100,12 @@ export default function LottoDisplay({ initialData }: LottoDisplayProps) {
         </motion.div>
 
         <Separator className="my-4" />
+
+        <NumberChecker
+          gameType={gameType}
+          winningNumbers={results.winningNumbers}
+          drawDate={results.drawDate}
+        />
 
         <motion.div
           className="space-y-4"
