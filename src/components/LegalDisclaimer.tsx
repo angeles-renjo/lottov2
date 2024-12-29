@@ -24,26 +24,23 @@ export default function LegalDisclaimer() {
                 independently and are not affiliated with, endorsed by, or
                 connected to the Philippine Charity Sweepstakes Office (PCSO).
               </p>
-
               <Separator className="my-2" />
-
               <p>
                 All lottery-related information, including draw results, jackpot
                 amounts, and draw schedules, is sourced from publicly available
                 data. For official verification of results and other
                 lottery-related concerns, please visit the official PCSO website
-                at
-                <Link
-                  href="https://www.pcso.gov.ph"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 underline"
-                >
-                  www.pcso.gov.ph
-                </Link>
-                .
+                at:
               </p>
-
+              <Link
+                href="https://www.pcso.gov.ph"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 underline"
+              >
+                www.pcso.gov.ph
+              </Link>
+              .
               <p>
                 While we strive to ensure accuracy, we recommend
                 cross-referencing all results with official PCSO channels before
