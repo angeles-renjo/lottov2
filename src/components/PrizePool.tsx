@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { LottoGameType } from "@/lib/types";
@@ -58,9 +57,12 @@ const PrizePool = ({ initialData }: PrizePoolProps) => {
       <Card className="animate-pulse">
         <CardContent className="p-3">
           <div className="h-6 bg-gray-200 rounded w-48 mx-auto mb-3"></div>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="flex justify-around items-center">
+              <div
+                key={i}
+                className="flex flex-col sm:flex-row sm:justify-around items-start sm:items-center gap-2 sm:gap-4"
+              >
                 <div className="h-4 bg-gray-200 rounded w-32"></div>
                 <div className="h-4 bg-gray-200 rounded w-24"></div>
                 <div className="h-4 bg-gray-200 rounded w-28"></div>
@@ -74,7 +76,7 @@ const PrizePool = ({ initialData }: PrizePoolProps) => {
 
   return (
     <Card className="w-full bg-white shadow-sm">
-      <h2 className="text-xl font-semibold p-3 text-center text-gray-800 border-b">
+      <h2 className="text-lg sm:text-xl font-semibold p-3 text-center text-gray-800 border-b">
         Lotto Prize Pool
       </h2>
       <CardContent className="p-3 divide-y divide-gray-100">
@@ -87,14 +89,14 @@ const PrizePool = ({ initialData }: PrizePoolProps) => {
               transition={{ delay: index * 0.1 }}
               className="py-3 first:pt-0 last:pb-0"
             >
-              <div className="flex justify-around items-center">
-                <div className="w-48">
+              <div className="flex flex-col sm:flex-row sm:justify-around items-start sm:items-center gap-2 sm:gap-4">
+                <div className="w-full sm:w-48">
                   <h3 className="text-base font-medium text-gray-800">
                     {result.gameName}
                   </h3>
                 </div>
 
-                <div className="flex gap-2 w-48">
+                <div className="flex flex-wrap gap-2 w-full sm:w-48">
                   <Badge
                     variant="destructive"
                     className="text-xs whitespace-nowrap"
@@ -120,9 +122,12 @@ const PrizePool = ({ initialData }: PrizePoolProps) => {
                   </Badge>
                 </div>
 
-                <div className="flex items-center gap-2 w-48">
+                <div className="flex items-center gap-2  sm:w-48">
                   <span className="text-sm text-gray-500">Prize:</span>
-                  <Badge variant="outline" className="text-sm text-emerald-500">
+                  <Badge
+                    variant="outline"
+                    className="text-sm text-emerald-500 flex-grow sm:flex-grow-0"
+                  >
                     ₱{result.jackpotAmount.toLocaleString()}
                   </Badge>
                 </div>
