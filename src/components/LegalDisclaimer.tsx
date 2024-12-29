@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
 import { AlertCircle } from "lucide-react";
+import Link from "next/link";
 
 export default function LegalDisclaimer() {
   return (
@@ -32,14 +33,14 @@ export default function LegalDisclaimer() {
                 data. For official verification of results and other
                 lottery-related concerns, please visit the official PCSO website
                 at
-                <a
+                <Link
                   href="https://www.pcso.gov.ph"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:text-blue-800 underline"
                 >
                   www.pcso.gov.ph
-                </a>
+                </Link>
                 .
               </p>
 
