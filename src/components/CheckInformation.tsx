@@ -18,13 +18,17 @@ export default function LottoCheckInfo() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-gray-600">
-            Players can watch PCSO lotto draws through multiple official
+            Players can check PCSO lotto draws through multiple official
             channels:
           </p>
 
           <div className="grid grid-cols-1 gap-4">
             <div className="p-3 bg-slate-50 rounded-lg">
-              <span className="text-gray-700">PTV Live Broadcast</span>
+              <span className="text-blue-600">
+                <Link href="https://www.pcso.gov.ph/" target="_blank">
+                  PCSO Official Website
+                </Link>
+              </span>
             </div>
 
             <div className="space-y-3">
