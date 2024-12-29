@@ -1,5 +1,3 @@
-// src/components/PrizePool.tsx
-
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -27,18 +25,13 @@ const PrizePool = ({ initialData }: PrizePoolProps) => {
   useEffect(() => {
     const fetchPrizePool = async () => {
       if (initialData) return;
-
       try {
         const response = await fetch("/api/lotto/prize");
-        if (!response.ok) {
+        if (!response.ok)
           throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
         const data = await response.json();
-        if (!data.success) {
+        if (!data.success)
           throw new Error(data.error?.message || "Failed to fetch prize pool");
-        }
-
         setResults(data.data);
       } catch (err) {
         console.error("Fetch error:", err);
@@ -47,37 +40,30 @@ const PrizePool = ({ initialData }: PrizePoolProps) => {
         setIsLoading(false);
       }
     };
-
     fetchPrizePool();
   }, [initialData]);
 
   if (error) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-      >
-        <Card className="bg-red-50 border-red-200">
-          <CardContent className="p-4">
-            <p className="text-red-700">{error}</p>
-          </CardContent>
-        </Card>
-      </motion.div>
+      <Card className="bg-red-50 border-red-200">
+        <CardContent className="p-2">
+          <p className="text-red-700 text-sm">{error}</p>
+        </CardContent>
+      </Card>
     );
   }
 
   if (isLoading) {
     return (
       <Card className="animate-pulse">
-        <CardContent className="p-6 space-y-6">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="space-y-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="space-y-2">
-                <div className="h-6 bg-gray-200 rounded w-1/4"></div>
-                <div className="h-10 bg-gray-200 rounded"></div>
-                {i < 5 && <div className="h-px bg-gray-200 my-4" />}
+        <CardContent className="p-3">
+          <div className="h-6 bg-gray-200 rounded w-48 mx-auto mb-3"></div>
+          <div className="space-y-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex justify-around items-center">
+                <div className="h-4 bg-gray-200 rounded w-32"></div>
+                <div className="h-4 bg-gray-200 rounded w-24"></div>
+                <div className="h-4 bg-gray-200 rounded w-28"></div>
               </div>
             ))}
           </div>
@@ -87,59 +73,60 @@ const PrizePool = ({ initialData }: PrizePoolProps) => {
   }
 
   return (
-    <Card className="w-full">
-      <h1 className="text-4xl font-bold p-4 text-center">Lotto Prize Pool</h1>
-      <CardContent className="p-6 space-y-6">
+    <Card className="w-full bg-white shadow-sm">
+      <h2 className="text-xl font-semibold p-3 text-center text-gray-800 border-b">
+        Lotto Prize Pool
+      </h2>
+      <CardContent className="p-3 divide-y divide-gray-100">
         {results.map((result, index) => (
           <AnimatePresence key={result.gameType} mode="wait">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              exit={{ opacity: 0, y: -10 }}
               transition={{ delay: index * 0.1 }}
-              className="space-y-4"
+              className="py-3 first:pt-0 last:pb-0"
             >
-              <div className="space-y-2">
-                <h3 className="text-xl font-semibold">{result.gameName}</h3>
-                <div className="flex flex-col gap-2">
-                  <Badge variant="destructive" className="text-sm w-fit">
-                    Last Draw:{" "}
+              <div className="flex justify-around items-center">
+                <div className="w-48">
+                  <h3 className="text-base font-medium text-gray-800">
+                    {result.gameName}
+                  </h3>
+                </div>
+
+                <div className="flex gap-2 w-48">
+                  <Badge
+                    variant="destructive"
+                    className="text-xs whitespace-nowrap"
+                  >
+                    Last:{" "}
                     {new Date(result.drawDate).toLocaleDateString("en-PH", {
-                      weekday: "long",
-                      month: "long",
+                      month: "short",
                       day: "numeric",
-                      year: "numeric",
                     })}
                   </Badge>
                   <Badge
                     variant="secondary"
-                    className="text-sm text-blue-500 w-fit"
+                    className="text-xs text-blue-500 whitespace-nowrap"
                   >
-                    Next Draw:{" "}
+                    Next:{" "}
                     {getNextDrawDate(result.gameType).toLocaleDateString(
                       "en-PH",
                       {
-                        weekday: "long",
-                        month: "long",
+                        month: "short",
                         day: "numeric",
-                        year: "numeric",
                       }
                     )}
                   </Badge>
                 </div>
-              </div>
 
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Jackpot Prize:</span>
-                <Badge
-                  variant="outline"
-                  className="text-lg text-emerald-500 px-3 py-1"
-                >
-                  ₱{result.jackpotAmount.toLocaleString()}
-                </Badge>
+                <div className="flex items-center gap-2 w-48">
+                  <span className="text-sm text-gray-500">Prize:</span>
+                  <Badge variant="outline" className="text-sm text-emerald-500">
+                    ₱{result.jackpotAmount.toLocaleString()}
+                  </Badge>
+                </div>
               </div>
-
-              {index < results.length - 1 && <Separator className="my-4" />}
             </motion.div>
           </AnimatePresence>
         ))}

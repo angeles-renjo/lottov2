@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -34,7 +33,6 @@ export default function NumberChecker({
   const currentGame = LOTTO_GAMES[gameType];
 
   const handleNumberChange = (index: number, value: string) => {
-    // Allow empty value for clearing input
     if (value === "") {
       const newNumbers = [...numbers];
       newNumbers[index] = value;
@@ -43,19 +41,16 @@ export default function NumberChecker({
       return;
     }
 
-    // Check if input is a valid number
     const isValidNumber = /^\d+$/.test(value);
     if (!isValidNumber) {
       return;
     }
 
-    // Check if number is within game range
     const numberValue = parseInt(value);
     if (numberValue > currentGame.maxNumber) {
       return;
     }
 
-    // Update numbers array
     const newNumbers = [...numbers];
     newNumbers[index] = value;
     setNumbers(newNumbers);
@@ -63,20 +58,17 @@ export default function NumberChecker({
   };
 
   const checkNumbers = () => {
-    // Validate all numbers are filled
     if (numbers.some((n) => !n)) {
       setError("Please fill in all numbers");
       return;
     }
 
-    // Convert to numbers and validate uniqueness
     const numberSet = new Set(numbers.map((n) => parseInt(n)));
     if (numberSet.size !== 6) {
       setError("Numbers must be unique");
       return;
     }
 
-    // Find matches
     const matches = numbers
       .map((n) => parseInt(n))
       .filter((n) => winningNumbers.includes(n))
@@ -114,25 +106,25 @@ export default function NumberChecker({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="flex flex-col items-center gap-4"
+      className="flex flex-col items-center w-full px-4 md:px-0"
     >
-      <Card className="w-1/2">
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold text-gray-800">
+      <Card className="w-full md:w-3/4 lg:w-2/3 xl:w-1/2">
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="text-lg md:text-xl font-semibold text-gray-800">
             Check Your Numbers
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 flex flex-col items-center">
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+        <CardContent className="space-y-4 flex flex-col items-center p-4 md:p-6">
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3 w-full">
             {numbers.map((number, index) => (
               <input
                 key={index}
                 type="text"
                 value={number}
                 onChange={(e) => handleNumberChange(index, e.target.value)}
-                className="w-full p-4 text-center text-lg font-medium border rounded-lg 
-                          focus:outline-none focus:ring-2 focus:ring-blue-500 
-                          transition-all duration-200"
+                className="w-full p-2 md:p-4 text-center text-base md:text-lg font-medium 
+                          border rounded-lg focus:outline-none focus:ring-2 
+                          focus:ring-blue-500 transition-all duration-200"
                 maxLength={2}
                 inputMode="numeric"
                 placeholder={(index + 1).toString()}
@@ -144,7 +136,7 @@ export default function NumberChecker({
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-red-500 text-sm"
+              className="text-red-500 text-sm md:text-base"
             >
               {error}
             </motion.div>
@@ -152,9 +144,9 @@ export default function NumberChecker({
 
           <Button
             onClick={checkNumbers}
-            className="p-6 bg-blue-600 text-white rounded-lg 
-                     hover:bg-blue-700 transition-colors duration-200
-                     font-medium text-lg"
+            className="w-full md:w-auto px-4 py-3 md:px-6 md:py-4 bg-blue-600 
+                     text-white rounded-lg hover:bg-blue-700 transition-colors 
+                     duration-200 font-medium text-base md:text-lg"
           >
             Check Numbers
           </Button>
@@ -162,13 +154,13 @@ export default function NumberChecker({
       </Card>
 
       <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
-        <AlertDialogContent className="max-w-md">
+        <AlertDialogContent className="max-w-xs md:max-w-md m-4 md:m-0">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-2xl flex items-center gap-2 justify-center">
+            <AlertDialogTitle className="text-xl md:text-2xl flex items-center gap-2 justify-center">
               {result?.matches?.length === 6 ? (
-                <PartyPopper className="h-8 w-8 text-yellow-500" />
+                <PartyPopper className="h-6 w-6 md:h-8 md:w-8 text-yellow-500" />
               ) : (
-                <AlertCircle className="h-8 w-8 text-blue-500" />
+                <AlertCircle className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
               )}
               <span>Result</span>
             </AlertDialogTitle>
@@ -176,10 +168,10 @@ export default function NumberChecker({
               <div className="space-y-4 text-center pt-4">
                 {result && (
                   <>
-                    <div className="text-xl font-medium">
+                    <div className="text-lg md:text-xl font-medium">
                       {getResultMessage(result.matches.length)}
                     </div>
-                    <div className="text-lg text-gray-600">
+                    <div className="text-base md:text-lg text-gray-600">
                       You matched {result.matches.length} number
                       {result.matches.length !== 1 ? "s" : ""}
                     </div>
@@ -189,7 +181,8 @@ export default function NumberChecker({
                           <Badge
                             key={num}
                             variant="secondary"
-                            className="px-4 py-2 text-lg bg-blue-100 text-blue-700"
+                            className="px-3 py-1 md:px-4 md:py-2 text-base md:text-lg 
+                                     bg-blue-100 text-blue-700"
                           >
                             {num.toString().padStart(2, "0")}
                           </Badge>
@@ -204,7 +197,7 @@ export default function NumberChecker({
           <AlertDialogFooter className="sm:justify-center">
             <AlertDialogAction
               onClick={resetNumbers}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
             >
               Try Again
             </AlertDialogAction>
