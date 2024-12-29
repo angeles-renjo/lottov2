@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { Wallet } from "lucide-react";
+import Link from "next/link";
 
 export default function LottoPrizeClaiming() {
   return (
@@ -90,7 +91,7 @@ export default function LottoPrizeClaiming() {
                   Have more questions about PCSO games and prizes?
                 </span>
               </div>
-              <a
+              <Link
                 href="https://www.pcso.gov.ph/FAQs.aspx"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -110,7 +111,7 @@ export default function LottoPrizeClaiming() {
                     d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                   />
                 </svg>
-              </a>
+              </Link>
             </div>
           </CardContent>
         </Card>

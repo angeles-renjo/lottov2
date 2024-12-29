@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function LottoCheckInfo() {
   return (
@@ -31,7 +32,7 @@ export default function LottoCheckInfo() {
                 Official Social Media Channels:
               </p>
               <div className="space-y-2">
-                <a
+                <Link
                   href="https://www.facebook.com/pcsoofficialsocialmedia"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -40,9 +41,9 @@ export default function LottoCheckInfo() {
                   <span className="text-blue-600">
                     PCSO Official Facebook Page
                   </span>
-                </a>
+                </Link>
 
-                <a
+                <Link
                   href="https://x.com/pcso_govph"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -51,9 +52,9 @@ export default function LottoCheckInfo() {
                   <span className="text-blue-600">
                     PCSO Official X (Twitter) Account
                   </span>
-                </a>
+                </Link>
 
-                <a
+                <Link
                   href="https://www.tiktok.com/@pcso_govph"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -62,7 +63,7 @@ export default function LottoCheckInfo() {
                   <span className="text-blue-600">
                     PCSO Official TikTok Account
                   </span>
-                </a>
+                </Link>
               </div>
             </div>
           </div>

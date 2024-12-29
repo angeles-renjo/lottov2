@@ -2,6 +2,7 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { LottoGameType } from "@/lib/types";
+import Link from "next/link";
 
 interface GameDisclaimerProps {
   gameType: LottoGameType;
@@ -27,14 +28,14 @@ export default function GameDisclaimer({ gameType }: GameDisclaimerProps) {
       <AlertDescription className="text-yellow-800">
         This guide is for reference only. For the most up-to-date and official
         information, please visit the{" "}
-        <a
+        <Link
           href={GAME_URLS[gameType]}
           target="_blank"
           rel="noopener noreferrer"
           className="underline font-semibold hover:text-yellow-900"
         >
           official PCSO website
-        </a>
+        </Link>
         .
       </AlertDescription>
     </Alert>
