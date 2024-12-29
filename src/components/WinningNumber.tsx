@@ -8,10 +8,10 @@ export default function WinningNumber({
 }: WinningNumberProps) {
   return (
     <div className="space-y-2">
-      <Badge variant="secondary" className="text-sm text-gray-500">
+      <Badge variant="secondary" className="text-sm font-bold text-gray-500">
         Draw Date: {new Date(drawDate).toLocaleDateString()}
       </Badge>
-      <div className="flex flex-wrap justify-around">
+      <div className="flex flex-wrap justify-around ">
         {numbers.map((number, index) => (
           <div
             key={index}
@@ -20,8 +20,8 @@ export default function WinningNumber({
               flex items-center justify-center
               ${
                 highlightedNumbers.includes(number)
-                  ? "bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600"
-                  : "bg-gradient-to-br from-red-400 via-red-500 to-red-600"
+                  ? "bg-gradient-to-br from-red-400 via-red-500 to-red-600"
+                  : "bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600"
               }
               shadow-lg
               transform transition-all duration-300 hover:scale-105
@@ -34,11 +34,8 @@ export default function WinningNumber({
             {/* Inner ring */}
             <div className="absolute inset-[2px] rounded-full border border-white/20" />
 
-            {/* Ball shine */}
-            <div className="absolute top-[10%] left-[10%] w-[30%] h-[30%] rounded-full bg-white/40 blur-sm" />
-
             {/* Number */}
-            <span className="relative text-2xl font-bold text-white drop-shadow">
+            <span className="relative text-4xl font-extrabold text-white drop-shadow">
               {number.toString().padStart(2, "0")}
             </span>
           </div>
