@@ -101,26 +101,20 @@ export default function LottoDisplay({ initialData }: LottoDisplayProps) {
 
         <Separator className="my-4" />
 
-        <NumberChecker
-          gameType={gameType}
-          winningNumbers={results.winningNumbers}
-          drawDate={results.drawDate}
-        />
-
         <motion.div
           className="space-y-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="">
+          <div>
             <motion.div
               className="space-y-2"
               initial={{ x: -20 }}
               animate={{ x: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <div className="flex flex-col w-full items-center justify-around gap-2">
+              <div className="flex  w-full items-center justify-center gap-2">
                 <Badge variant="outline">
                   <div className="text-gray-600 font-bold text-lg flex items-center gap-2">
                     Jackpot Prize:
@@ -135,6 +129,11 @@ export default function LottoDisplay({ initialData }: LottoDisplayProps) {
               </div>
             </motion.div>
           </div>
+          <NumberChecker
+            gameType={gameType}
+            winningNumbers={results.winningNumbers}
+            drawDate={results.drawDate}
+          />
         </motion.div>
       </CardContent>
     </Card>

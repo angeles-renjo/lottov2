@@ -114,8 +114,9 @@ export default function NumberChecker({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
+      className="flex flex-col items-center gap-4"
     >
-      <Card className="w-full">
+      <Card className="w-1/2">
         <CardHeader>
           <CardTitle className="text-xl font-semibold text-gray-800">
             Check Your Numbers

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import { LottoGameType } from "@/lib/types";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +22,34 @@ const getJsonLd = (date: string) => {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "PCSO Lotto Results Philippines",
-    description: `Official PCSO lottery results and winning numbers for ${date}`,
+    description: `Official PCSO lottery results, number checker, and winning numbers for ${date}`,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${siteUrl}/check-numbers?gameType={game_type}`,
+      },
+      "query-input": "required name=game_type",
+    },
+    offers: {
+      "@type": "Service",
+      serviceType: "Lottery Results and Number Verification",
+      availableAtOrFrom: {
+        "@type": "Organization",
+        name: "PCSO Lotto Results",
+        url: siteUrl,
+      },
+    },
+    mainEntity: {
+      "@type": "WebApplication",
+      name: "PCSO Lotto Number Checker",
+      applicationCategory: "Utility Application",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "PHP",
+      },
+    },
   };
 
   // Add additional data if we have a production URL
@@ -37,6 +65,7 @@ const getJsonLd = (date: string) => {
           url: `${siteUrl}/logo.png`,
         },
       },
+      sameAs: ["https://www.pcso.gov.ph"],
     };
   }
 
@@ -92,10 +121,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const baseMetadata: Metadata = {
     title: {
       template: "%s | PCSO Lotto Results Philippines",
-      default: `PCSO Lotto Results for ${currentDate}`,
+      default: `PCSO Lotto Results and Number Checker for ${currentDate}`,
     },
-    description: `Check today's PCSO lottery results for ${currentDate}. Get the latest winning numbers and jackpot prizes for all Philippine lottery games including Ultra Lotto 6/58, Grand Lotto 6/55, and more.`,
+    description: `Check today's PCSO lottery results and verify your numbers for ${currentDate}. Get the latest winning numbers, instant ticket verification, and jackpot prizes for all Philippine lottery games including Ultra Lotto 6/58, Grand Lotto 6/55, and more.`,
     keywords: [
+      // Existing keywords
       "PCSO results",
       "Lotto results",
       "Philippine lottery",
@@ -105,6 +135,15 @@ export async function generateMetadata(): Promise<Metadata> {
       "Super Lotto 6/49",
       "Mega Lotto 6/45",
       "Philippine lottery results",
+      // New keywords for number checker
+      "check lotto numbers",
+      "verify lotto ticket",
+      "PCSO number checker",
+      "lotto number verification",
+      "Philippine lottery checker",
+      "PCSO ticket verification",
+      "lottery number validator",
+      "check winning numbers",
     ],
     formatDetection: {
       telephone: false,
@@ -112,8 +151,8 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: "website",
       locale: "en_PH",
-      title: `PCSO Lotto Results Philippines - ${currentDate}`,
-      description: `Check today's PCSO Lotto results. Get winning numbers and jackpot prizes for all Philippine lottery games. Updated after every draw.`,
+      title: `PCSO Lotto Results & Number Checker - ${currentDate}`,
+      description: `Check PCSO Lotto results and instantly verify your lottery numbers. Get winning numbers, jackpot prizes, and verify tickets for all Philippine lottery games. Updated after every draw.`,
     },
   };
 
@@ -124,6 +163,9 @@ export async function generateMetadata(): Promise<Metadata> {
       metadataBase: new URL(siteUrl),
       alternates: {
         canonical: "/",
+        languages: {
+          "en-PH": "/",
+        },
       },
       openGraph: {
         ...baseMetadata.openGraph,
@@ -136,6 +178,9 @@ export async function generateMetadata(): Promise<Metadata> {
             alt: "PCSO Lotto Results Philippines",
           },
         ],
+      },
+      verification: {
+        google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
       },
     };
   }
