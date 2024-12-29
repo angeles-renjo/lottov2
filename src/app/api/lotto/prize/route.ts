@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { lottoScraper } from "@/lib/scraper";
 import { LottoGameType, LOTTO_GAMES, ApiResponse } from "@/lib/types";
 
-// Simplified result type for prize pool
 interface PrizePoolResult {
   gameType: LottoGameType;
   gameName: string;
@@ -23,8 +22,7 @@ export async function GET(
     for (const gameType of gameTypes) {
       try {
         console.log(`Fetching results for ${gameType}`);
-        lottoScraper.setGameType(gameType);
-        const response = await lottoScraper.fetchLatestResults();
+        const response = await lottoScraper.fetchLatestResults(gameType);
 
         if (response.success && response.data) {
           results.push({

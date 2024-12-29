@@ -8,33 +8,30 @@ import {
   LOTTO_GAMES,
   LOTTO_CONSTANTS,
 } from "./types";
-import { validateLottoNumbers } from "./validation";
 import { LottoCache } from "./cache";
 
 export class LottoScraper {
   private readonly baseUrl: string = LOTTO_CONSTANTS.BASE_URL;
-  private gameType: LottoGameType;
   private cache: LottoCache;
 
   constructor() {
-    this.gameType = LottoGameType.ULTRA_LOTTO_658;
     // Initialize cache with 5 minute TTL
     this.cache = new LottoCache({ ttl: 5 * 60 * 1000 });
   }
 
-  setGameType(gameType: LottoGameType) {
-    if (!LOTTO_GAMES[gameType]) {
-      throw this.handleError("INVALID_GAME", `Invalid game type: ${gameType}`);
-    }
-    this.gameType = gameType;
-  }
-
-  async fetchLatestResults(): Promise<ScraperResponse> {
+  async fetchLatestResults(gameType: LottoGameType): Promise<ScraperResponse> {
     try {
+      if (!LOTTO_GAMES[gameType]) {
+        throw this.handleError(
+          "INVALID_GAME",
+          `Invalid game type: ${gameType}`
+        );
+      }
+
       // Check cache first
-      const cachedResult = this.cache.get(this.gameType);
+      const cachedResult = this.cache.get(gameType);
       if (cachedResult) {
-        console.log(`Cache hit for game type: ${this.gameType}`);
+        console.log(`Cache hit for game type: ${gameType}`);
         return {
           success: true,
           data: cachedResult,
@@ -42,7 +39,7 @@ export class LottoScraper {
       }
 
       console.log(
-        `Cache miss for game type: ${this.gameType}, fetching from source...`
+        `Cache miss for game type: ${gameType}, fetching from source...`
       );
 
       const html = await this.fetchPage();
@@ -56,14 +53,7 @@ export class LottoScraper {
         throw this.handleError("NO_RESULTS", "Results container not found");
       }
 
-      const gameConfig = LOTTO_GAMES[this.gameType];
-      if (!gameConfig) {
-        throw this.handleError(
-          "INVALID_GAME_CONFIG",
-          `Configuration not found for game ${this.gameType}`
-        );
-      }
-
+      const gameConfig = LOTTO_GAMES[gameType];
       const gameDiv = container.find(
         `.draw-game:has(img[src*="${gameConfig.imageId}.png"])`
       );
@@ -105,7 +95,7 @@ export class LottoScraper {
       };
 
       // Store in cache before returning
-      this.cache.set(this.gameType, lottoResult);
+      this.cache.set(gameType, lottoResult);
 
       return {
         success: true,
@@ -155,15 +145,6 @@ export class LottoScraper {
   // Debug method to get cache statistics
   getCacheStats() {
     return this.cache.getCacheStats();
-  }
-
-  // Method to manually invalidate cache
-  invalidateCache(gameType?: LottoGameType) {
-    if (gameType) {
-      this.cache.invalidate(gameType);
-    } else {
-      this.cache.invalidateAll();
-    }
   }
 }
 

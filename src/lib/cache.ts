@@ -1,4 +1,4 @@
-// src/app/(site)/_lib/cache.ts
+// src/app/lib/cache.ts
 import { LottoGameType, LottoResult } from "./types";
 
 interface CacheEntry {

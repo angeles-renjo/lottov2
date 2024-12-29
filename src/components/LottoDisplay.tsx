@@ -20,11 +20,6 @@ export default function LottoDisplay({ initialData }: LottoDisplayProps) {
   );
 
   useEffect(() => {
-    // Only fetch if gameType changes and it's not the initial load
-    if (gameType === LottoGameType.ULTRA_LOTTO_658 && initialData) {
-      return;
-    }
-
     const fetchResults = async () => {
       try {
         setError(null);
@@ -49,7 +44,7 @@ export default function LottoDisplay({ initialData }: LottoDisplayProps) {
     };
 
     fetchResults();
-  }, [gameType, initialData]);
+  }, [gameType]);
 
   if (error) {
     return (

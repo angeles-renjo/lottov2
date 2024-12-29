@@ -56,29 +56,9 @@ export async function GET(
     const gameType = gameTypeParam as LottoGameType;
     console.log("Validated gameType:", gameType); // Debug log
 
-    // Set game type for scraper
-    try {
-      lottoScraper.setGameType(gameType);
-    } catch (error) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: "GAME_CONFIG_ERROR",
-            message:
-              error instanceof Error
-                ? error.message
-                : "Invalid game configuration",
-            timestamp: new Date(),
-          },
-        },
-        { status: 400 }
-      );
-    }
-
-    // Fetch results
+    // Fetch results with gameType parameter
     console.log("Fetching results for game type:", gameType); // Debug log
-    const response = await lottoScraper.fetchLatestResults();
+    const response = await lottoScraper.fetchLatestResults(gameType);
     console.log("Scraper response:", response); // Debug log
 
     if (!response.success || !response.data) {
