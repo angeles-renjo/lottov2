@@ -12,12 +12,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { motion } from "framer-motion";
 import { PartyPopper, AlertCircle } from "lucide-react";
-import {
-  LottoGameType,
-  LOTTO_GAMES,
-  NumberCheckerProps,
-  CheckResult,
-} from "@/lib/types";
+import { LOTTO_GAMES, NumberCheckerProps, CheckResult } from "@/lib/types";
 import { Button } from "./ui/button";
 
 export default function NumberChecker({

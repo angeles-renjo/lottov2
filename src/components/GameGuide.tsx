@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { AlertCircle, Clock, Calculator, Info } from "lucide-react";
+import { Clock, Calculator, Info } from "lucide-react";
 import { LOTTO_GAMES, LottoGameType, LOTTO_CONSTANTS } from "@/lib/types";
 import { GAME_GUIDES } from "@/lib/gameGuideType";
 import GameDisclaimer from "./GameDisclaimer";
