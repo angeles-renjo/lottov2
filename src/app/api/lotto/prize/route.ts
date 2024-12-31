@@ -9,9 +9,7 @@ interface PrizePoolResult {
   drawDate: Date;
 }
 
-export async function GET(
-  _request: NextRequest
-): Promise<NextResponse<ApiResponse<PrizePoolResult[]>>> {
+export async function GET() {
   try {
     console.log("Prize Pool API route called");
 

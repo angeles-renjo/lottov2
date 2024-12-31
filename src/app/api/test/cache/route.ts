@@ -19,7 +19,7 @@ interface TestResult {
   data: ScraperResponse;
 }
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   const results: TestResult[] = [];
   const gameTypes = [
     LottoGameType.ULTRA_LOTTO_658,
@@ -66,13 +66,12 @@ export async function GET(_request: NextRequest) {
       testResults: results,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
-    console.error("Cache test route error:", error);
+  } catch (_) {
+    console.error("Cache test route error:", _);
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error ? error.message : "Unknown error occurred",
+        error: _ instanceof Error ? _.message : "Unknown error occurred",
         timestamp: new Date().toISOString(),
         testResults: results, // Include partial results if any
       },
