@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { lottoScraper } from "@/lib/scraper";
-import { LottoGameType, LOTTO_GAMES, ApiResponse } from "@/lib/types";
+import { LottoGameType, LOTTO_GAMES } from "@/lib/types";
 
 interface PrizePoolResult {
   gameType: LottoGameType;
