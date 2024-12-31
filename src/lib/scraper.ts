@@ -11,124 +11,40 @@ import {
 } from "./types";
 import { LottoCache } from "./cache";
 
+interface ParsedGameResult {
+  gameName: string;
+  combinations: string;
+  drawDate: string;
+  jackpot: string;
+  winners: string;
+}
+
 export class LottoScraper {
   private readonly baseUrl: string =
     "https://www.pcso.gov.ph/SearchLottoResult.aspx";
   private cache: LottoCache;
 
   constructor() {
-    this.cache = new LottoCache({ ttl: 5 * 60 * 1000 });
+    this.cache = new LottoCache({ ttl: 5 * 60 * 1000 }); // 5 minutes TTL
   }
 
-  async fetchLatestResults(gameType: LottoGameType): Promise<ScraperResponse> {
-    try {
-      // Check if valid game type
-      if (!LOTTO_GAMES[gameType]) {
-        throw this.handleError(
-          "INVALID_GAME",
-          `Invalid game type: ${gameType}`
-        );
-      }
+  private handleError(code: string, message: string): ErrorDetails {
+    return {
+      code,
+      message,
+      timestamp: new Date(),
+    };
+  }
 
-      // Check cache first
-      const cachedResult = this.cache.get(gameType);
-      if (cachedResult) {
-        console.log(`Cache hit for game type: ${gameType}`);
-        return { success: true, data: cachedResult };
-      }
+  private formatAmount(amountStr: string): number {
+    return Number(amountStr.replace(/[₱,]/g, "")) || 0;
+  }
 
-      console.log(
-        `Cache miss for game type: ${gameType}, fetching from source...`
-      );
-
-      const html = await this.fetchPage();
-      const $ = cheerio.load(html);
-
-      // Get the results table
-      const table = $("#cphContainer_cpContent_GridView1");
-      if (!table.length) {
-        throw this.handleError("NO_RESULTS", "Results table not found");
-      }
-
-      // Find the row for the specific game type
-      const gameConfig = LOTTO_GAMES[gameType];
-      const gameRow = table
-        .find("tr")
-        .filter((_, el) => {
-          const gameName = $(el).find("td").first().text().trim();
-          return gameName === gameConfig.name;
-        })
-        .first();
-
-      if (!gameRow.length) {
-        throw this.handleError(
-          "GAME_NOT_FOUND",
-          `Game ${gameConfig.name} not found in results`
-        );
-      }
-
-      // Extract data from the row
-      const cells = gameRow.find("td");
-      const combinationsStr = $(cells[1]).text().trim();
-      const dateStr = $(cells[2]).text().trim();
-      const jackpotStr = $(cells[3]).text().trim();
-      const winnersStr = $(cells[4]).text().trim();
-
-      // Parse winning numbers
-      const numbers = combinationsStr
-        .split("-")
-        .map((num) => parseInt(num.trim(), 10))
-        .filter((num) => !isNaN(num));
-
-      // Validate number count
-      if (numbers.length !== LOTTO_CONSTANTS.NUMBERS_PER_DRAW) {
-        throw this.handleError(
-          "INVALID_NUMBERS",
-          `Expected ${LOTTO_CONSTANTS.NUMBERS_PER_DRAW} numbers, got ${numbers.length}`
-        );
-      }
-
-      // Validate number range
-      const isValidRange = numbers.every(
-        (num) =>
-          num >= LOTTO_CONSTANTS.MIN_NUMBER &&
-          num <= LOTTO_GAMES[gameType].maxNumber
-      );
-
-      if (!isValidRange) {
-        throw this.handleError(
-          "INVALID_NUMBER_RANGE",
-          `Numbers must be between ${LOTTO_CONSTANTS.MIN_NUMBER} and ${LOTTO_GAMES[gameType].maxNumber}`
-        );
-      }
-
-      const lottoResult: LottoResult = {
-        drawDate: new Date(dateStr),
-        drawNumber: "N/A", // Not available in the table
-        winningNumbers: numbers,
-        jackpotAmount: this.formatAmount(jackpotStr),
-        winners: parseInt(winnersStr, 10) || 0,
-      };
-
-      // Store in cache before returning
-      this.cache.set(gameType, lottoResult);
-
-      return {
-        success: true,
-        data: lottoResult,
-      };
-    } catch (error) {
-      console.error("Scraper error:", error);
-      const errorDetails =
-        error instanceof Error
-          ? this.handleError("SCRAPER_ERROR", error.message)
-          : this.handleError("UNKNOWN_ERROR", "An unknown error occurred");
-
-      return {
-        success: false,
-        error: errorDetails,
-      };
-    }
+  private parseNumbers(combinationsStr: string): number[] {
+    return combinationsStr
+      .split("-")
+      .map((num) => parseInt(num.trim(), 10))
+      .filter((num) => !isNaN(num));
   }
 
   private async fetchPage(): Promise<string> {
@@ -136,12 +52,19 @@ export class LottoScraper {
       const response = await axios.get(this.baseUrl, {
         headers: {
           "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
           Accept:
-            "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
           "Accept-Language": "en-US,en;q=0.9",
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
+          "Sec-Fetch-Dest": "document",
+          "Sec-Fetch-Mode": "navigate",
+          "Sec-Fetch-Site": "none",
+          "Sec-Fetch-User": "?1",
+          "Upgrade-Insecure-Requests": "1",
         },
-        timeout: 10000,
+        timeout: 15000,
       });
 
       if (!response.data) {
@@ -150,10 +73,7 @@ export class LottoScraper {
 
       return response.data;
     } catch (error) {
-      console.error("Fetch error details:", {
-        message: error instanceof Error ? error.message : "Unknown error",
-        url: this.baseUrl,
-      });
+      console.error("Fetch error:", error);
       throw this.handleError(
         "FETCH_ERROR",
         `Failed to fetch lotto page: ${
@@ -163,17 +83,136 @@ export class LottoScraper {
     }
   }
 
-  private formatAmount(amountStr: string): number {
-    // Remove PHP, commas, and convert to number
-    return Number(amountStr.replace(/[₱,]/g, "")) || 0;
+  private parseGameResults($: cheerio.CheerioAPI): ParsedGameResult[] {
+    const results: ParsedGameResult[] = [];
+    const table = $("#cphContainer_cpContent_GridView1");
+
+    table.find("tr").each((_, row) => {
+      const cells = $(row).find("td");
+      if (cells.length >= 5) {
+        results.push({
+          gameName: $(cells[0]).text().trim(),
+          combinations: $(cells[1]).text().trim(),
+          drawDate: $(cells[2]).text().trim(),
+          jackpot: $(cells[3]).text().trim(),
+          winners: $(cells[4]).text().trim(),
+        });
+      }
+    });
+
+    return results;
   }
 
-  private handleError(code: string, message: string): ErrorDetails {
-    return {
-      code,
-      message,
-      timestamp: new Date(),
-    };
+  private findGameTypeByName(gameName: string): LottoGameType | null {
+    for (const [type, config] of Object.entries(LOTTO_GAMES)) {
+      if (config.name === gameName) {
+        return type as LottoGameType;
+      }
+    }
+    return null;
+  }
+
+  async fetchAllResults(): Promise<ScraperResponse[]> {
+    try {
+      // Check if we have valid cached results for any game
+      const cachedResults: Map<LottoGameType, LottoResult> = new Map();
+      let needsFetch = false;
+
+      // Check cache for all game types
+      Object.values(LottoGameType).forEach((gameType) => {
+        const cached = this.cache.get(gameType);
+        if (cached) {
+          cachedResults.set(gameType, cached);
+        } else {
+          needsFetch = true;
+        }
+      });
+
+      // If we have all results cached and they're valid, return them
+      if (
+        !needsFetch &&
+        cachedResults.size === Object.keys(LottoGameType).length
+      ) {
+        return Array.from(cachedResults.entries()).map(([gameType, data]) => ({
+          success: true,
+          data,
+          gameType,
+        }));
+      }
+
+      // Fetch and parse all results
+      const html = await this.fetchPage();
+      const $ = cheerio.load(html);
+      const parsedResults = this.parseGameResults($);
+
+      const responses: ScraperResponse[] = [];
+
+      for (const result of parsedResults) {
+        const gameType = this.findGameTypeByName(result.gameName);
+        if (!gameType) continue; // Skip non-matching games
+
+        const numbers = this.parseNumbers(result.combinations);
+        if (numbers.length !== LOTTO_CONSTANTS.NUMBERS_PER_DRAW) continue;
+
+        const lottoResult: LottoResult = {
+          drawDate: new Date(result.drawDate),
+          drawNumber: "N/A", // Not available in the table
+          winningNumbers: numbers,
+          jackpotAmount: this.formatAmount(result.jackpot),
+          winners: parseInt(result.winners, 10) || 0,
+        };
+
+        // Cache the result
+        this.cache.set(gameType, lottoResult);
+
+        responses.push({
+          success: true,
+          data: lottoResult,
+          gameType,
+        });
+      }
+
+      return responses;
+    } catch (error) {
+      console.error("Scraper error:", error);
+      throw this.handleError(
+        "SCRAPER_ERROR",
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
+    }
+  }
+
+  async fetchLatestResults(gameType: LottoGameType): Promise<ScraperResponse> {
+    try {
+      // Check cache first
+      const cachedResult = this.cache.get(gameType);
+      if (cachedResult) {
+        console.log(`Cache hit for game type: ${gameType}`);
+        return { success: true, data: cachedResult };
+      }
+
+      // Fetch all results
+      const allResults = await this.fetchAllResults();
+      const gameResult = allResults.find((r) => r.gameType === gameType);
+
+      if (!gameResult || !gameResult.success) {
+        throw this.handleError(
+          "GAME_NOT_FOUND",
+          `No results found for game type: ${gameType}`
+        );
+      }
+
+      return gameResult;
+    } catch (error) {
+      console.error("Error fetching latest results:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error
+            ? this.handleError("FETCH_ERROR", error.message)
+            : this.handleError("UNKNOWN_ERROR", "An unknown error occurred"),
+      };
+    }
   }
 
   // Debug method to get cache statistics

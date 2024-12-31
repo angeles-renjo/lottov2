@@ -1,3 +1,4 @@
+// src/app/api/lotto/results/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { lottoScraper } from "@/lib/scraper";
 import {
@@ -5,19 +6,20 @@ import {
   LottoResult,
   LottoGameType,
   LOTTO_GAMES,
+  ScraperResponse,
 } from "@/lib/types";
 
 export async function GET(
   request: NextRequest
 ): Promise<NextResponse<ApiResponse<LottoResult>>> {
   try {
-    console.log("API route called"); // Debug log
+    console.log("Results API route called");
 
     // Get query parameters
     const searchParams = request.nextUrl.searchParams;
     const gameTypeParam = searchParams.get("gameType");
 
-    console.log("Received gameType:", gameTypeParam); // Debug log
+    console.log("Requested gameType:", gameTypeParam);
 
     // Validate gameType parameter
     if (!gameTypeParam) {
@@ -54,15 +56,15 @@ export async function GET(
     }
 
     const gameType = gameTypeParam as LottoGameType;
-    console.log("Validated gameType:", gameType); // Debug log
+    console.log("Processing request for game type:", gameType);
 
-    // Fetch results with gameType parameter
-    console.log("Fetching results for game type:", gameType); // Debug log
-    const response = await lottoScraper.fetchLatestResults(gameType);
-    console.log("Scraper response:", response); // Debug log
+    // Try to fetch results
+    const response: ScraperResponse = await lottoScraper.fetchLatestResults(
+      gameType
+    );
 
     if (!response.success || !response.data) {
-      console.error("Scraper error:", response.error); // Debug log
+      console.error("Scraper error:", response.error);
       return NextResponse.json(
         {
           success: false,
@@ -83,11 +85,21 @@ export async function GET(
       metadata: {
         timestamp: new Date(),
         requestId: crypto.randomUUID(),
-        gameInfo: LOTTO_GAMES[gameType], // Include game information in metadata
+        gameInfo: LOTTO_GAMES[gameType],
+        cached: true, // Add this to indicate if the result came from cache
       },
     });
   } catch (error) {
-    console.error("API Error:", error); // Debug log
+    console.error("Results API Error:", {
+      error:
+        error instanceof Error
+          ? {
+              message: error.message,
+              stack: error.stack,
+            }
+          : error,
+    });
+
     return NextResponse.json(
       {
         success: false,

@@ -1,3 +1,4 @@
+// src/app/api/lotto/prize/route.ts
 import { NextResponse } from "next/server";
 import { lottoScraper } from "@/lib/scraper";
 import { LottoGameType, LOTTO_GAMES } from "@/lib/types";
@@ -13,39 +14,42 @@ export async function GET() {
   try {
     console.log("Prize Pool API route called");
 
-    const results: PrizePoolResult[] = [];
-    const gameTypes = Object.values(LottoGameType);
+    // Fetch all results at once
+    const allResults = await lottoScraper.fetchAllResults();
 
-    // Process each game type sequentially to avoid rate limiting
-    for (const gameType of gameTypes) {
-      try {
-        console.log(`Fetching results for ${gameType}`);
-        const response = await lottoScraper.fetchLatestResults(gameType);
-
-        if (response.success && response.data) {
-          results.push({
-            gameType,
-            gameName: LOTTO_GAMES[gameType].name,
-            jackpotAmount: response.data.jackpotAmount,
-            drawDate: response.data.drawDate,
-          });
-        } else {
-          console.error(`Failed to fetch ${gameType}:`, response.error);
-        }
-      } catch (error) {
-        console.error(`Error processing ${gameType}:`, error);
-        // Continue with other game types even if one fails
-        continue;
-      }
-    }
-
-    if (results.length === 0) {
+    if (!allResults || allResults.length === 0) {
       return NextResponse.json(
         {
           success: false,
           error: {
             code: "FETCH_ERROR",
             message: "Failed to fetch any lotto results",
+            timestamp: new Date(),
+          },
+        },
+        { status: 500 }
+      );
+    }
+
+    // Transform results into PrizePoolResult format
+    const results: PrizePoolResult[] = allResults
+      .filter(
+        (response) => response.success && response.data && response.gameType
+      )
+      .map((response) => ({
+        gameType: response.gameType as LottoGameType, // Type assertion since we filtered nulls
+        gameName: LOTTO_GAMES[response.gameType as LottoGameType].name,
+        jackpotAmount: response.data!.jackpotAmount,
+        drawDate: response.data!.drawDate,
+      }));
+
+    if (results.length === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: "TRANSFORM_ERROR",
+            message: "Failed to transform lotto results",
             timestamp: new Date(),
           },
         },

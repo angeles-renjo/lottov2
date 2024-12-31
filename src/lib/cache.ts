@@ -1,4 +1,4 @@
-// src/app/lib/cache.ts
+// src/lib/cache.ts
 import { LottoGameType, LottoResult } from "./types";
 
 interface CacheEntry {
@@ -12,12 +12,23 @@ interface CacheConfig {
   maxEntries?: number;
 }
 
+interface CacheStats {
+  size: number;
+  maxEntries: number | undefined;
+  ttl: number;
+  entries: Array<{
+    gameType: LottoGameType;
+    expiresIn: number;
+    isExpired: boolean;
+  }>;
+}
+
 export class LottoCache {
   private cache: Map<LottoGameType, CacheEntry>;
   private readonly config: CacheConfig;
+  private lastBulkUpdate: number | null = null;
 
   constructor(config: CacheConfig = { ttl: 5 * 60 * 1000 }) {
-    // Default 5 minutes TTL
     this.cache = new Map();
     this.config = {
       ttl: config.ttl,
@@ -63,12 +74,65 @@ export class LottoCache {
     this.cache.set(gameType, entry);
   }
 
+  // New method for bulk operations
+  setBulk(entries: { gameType: LottoGameType; data: LottoResult }[]): void {
+    const now = Date.now();
+    this.lastBulkUpdate = now;
+
+    entries.forEach(({ gameType, data }) => {
+      const entry: CacheEntry = {
+        data,
+        timestamp: now,
+        expiresAt: now + this.config.ttl,
+      };
+      this.cache.set(gameType, entry);
+    });
+
+    // Clean up old entries if we exceed maxEntries
+    while (this.config.maxEntries && this.cache.size > this.config.maxEntries) {
+      const oldestKey = this.findOldestEntry();
+      if (oldestKey) {
+        this.cache.delete(oldestKey);
+      }
+    }
+  }
+
+  // Get all valid cache entries
+  getAll(): Map<LottoGameType, LottoResult> {
+    const now = Date.now();
+    const validEntries = new Map<LottoGameType, LottoResult>();
+
+    this.cache.forEach((entry, gameType) => {
+      if (now <= entry.expiresAt) {
+        validEntries.set(gameType, entry.data);
+      }
+    });
+
+    return validEntries;
+  }
+
+  // Check if all game types are cached and valid
+  isAllCached(gameTypes: LottoGameType[]): boolean {
+    const now = Date.now();
+    return gameTypes.every((gameType) => {
+      const entry = this.cache.get(gameType);
+      return entry && now <= entry.expiresAt;
+    });
+  }
+
+  // Get the time since last bulk update
+  getTimeSinceLastBulkUpdate(): number | null {
+    if (!this.lastBulkUpdate) return null;
+    return Date.now() - this.lastBulkUpdate;
+  }
+
   invalidate(gameType: LottoGameType): void {
     this.cache.delete(gameType);
   }
 
   invalidateAll(): void {
     this.cache.clear();
+    this.lastBulkUpdate = null;
   }
 
   isExpired(gameType: LottoGameType): boolean {
@@ -101,16 +165,16 @@ export class LottoCache {
     return oldestKey;
   }
 
-  // Debug methods
-  getCacheStats() {
+  getCacheStats(): CacheStats {
+    const now = Date.now();
     return {
       size: this.cache.size,
-      maxEntries: this.config.maxEntries,
+      maxEntries: this.config.maxEntries || undefined,
       ttl: this.config.ttl,
       entries: Array.from(this.cache.entries()).map(([gameType, entry]) => ({
         gameType,
-        expiresIn: Math.max(0, entry.expiresAt - Date.now()),
-        isExpired: Date.now() > entry.expiresAt,
+        expiresIn: Math.max(0, entry.expiresAt - now),
+        isExpired: now > entry.expiresAt,
       })),
     };
   }

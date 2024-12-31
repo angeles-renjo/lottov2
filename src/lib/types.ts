@@ -75,6 +75,7 @@ export interface ScraperResponse {
   success: boolean;
   data?: LottoResult;
   error?: ErrorDetails;
+  gameType?: LottoGameType;
 }
 
 export interface ErrorDetails {

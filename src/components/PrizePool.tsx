@@ -1,3 +1,4 @@
+// components/PrizePool.tsx
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -74,15 +75,30 @@ const PrizePool = ({ initialData }: PrizePoolProps) => {
     );
   }
 
+  // Remove duplicates based on gameType
+  const uniqueResults = results.reduce((acc, current) => {
+    const existingResult = acc.find(
+      (item) => item.gameType === current.gameType
+    );
+    if (!existingResult) {
+      acc.push(current);
+    } else if (new Date(current.drawDate) > new Date(existingResult.drawDate)) {
+      // If duplicate found, keep the most recent one
+      acc[acc.indexOf(existingResult)] = current;
+    }
+    return acc;
+  }, [] as PrizePoolResult[]);
+
   return (
     <Card className="w-full bg-white shadow-sm">
       <h2 className="text-lg sm:text-xl font-semibold p-3 text-center text-gray-800 border-b">
         Lotto Prize Pool
       </h2>
       <CardContent className="p-3 divide-y divide-gray-100">
-        {results.map((result, index) => (
-          <AnimatePresence key={result.gameType} mode="wait">
+        <AnimatePresence mode="wait">
+          {uniqueResults.map((result, index) => (
             <motion.div
+              key={`${result.gameType}-${result.drawDate}`} // Composite key using both gameType and drawDate
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
@@ -122,7 +138,7 @@ const PrizePool = ({ initialData }: PrizePoolProps) => {
                   </Badge>
                 </div>
 
-                <div className="flex items-center gap-2  sm:w-48">
+                <div className="flex items-center gap-2 sm:w-48">
                   <span className="text-sm text-gray-500">Prize:</span>
                   <Badge
                     variant="outline"
@@ -133,8 +149,8 @@ const PrizePool = ({ initialData }: PrizePoolProps) => {
                 </div>
               </div>
             </motion.div>
-          </AnimatePresence>
-        ))}
+          ))}
+        </AnimatePresence>
       </CardContent>
     </Card>
   );
