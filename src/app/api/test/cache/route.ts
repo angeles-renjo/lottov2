@@ -1,5 +1,5 @@
 // src/app/api/test/cache/route.ts
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { lottoScraper } from "@/lib/scraper";
 import { LottoGameType, ScraperResponse } from "@/lib/types";
 

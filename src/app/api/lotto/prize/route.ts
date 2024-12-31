@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { lottoScraper } from "@/lib/scraper";
 import { LottoGameType, LOTTO_GAMES, ApiResponse } from "@/lib/types";
 
