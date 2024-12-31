@@ -19,7 +19,7 @@ export interface LottoGame {
 export const LOTTO_CONSTANTS = {
   MIN_NUMBER: 1,
   NUMBERS_PER_DRAW: 6,
-  BASE_URL: "https://www.pcso.gov.ph",
+  BASE_URL: "https://www.pcso.gov.ph/SearchLottoResult.aspx",
 } as const;
 
 // Game Configurations
@@ -41,14 +41,14 @@ export const LOTTO_GAMES: Record<LottoGameType, LottoGame> = {
   [LottoGameType.SUPER_LOTTO_649]: {
     type: LottoGameType.SUPER_LOTTO_649,
     path: "/gaming/games/lottery/super-lotto-6-49",
-    name: "Super Lotto 6/49",
+    name: "Superlotto 6/49",
     maxNumber: 49,
     imageId: "6491",
   },
   [LottoGameType.MEGA_LOTTO_645]: {
     type: LottoGameType.MEGA_LOTTO_645,
     path: "/gaming/games/lottery/mega-lotto-6-45",
-    name: "Mega Lotto 6/45",
+    name: "Megalotto 6/45",
     maxNumber: 45,
     imageId: "6451",
   },
