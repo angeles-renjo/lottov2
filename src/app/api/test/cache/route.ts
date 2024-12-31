@@ -19,7 +19,7 @@ interface TestResult {
   data: ScraperResponse;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const results: TestResult[] = [];
   const gameTypes = [
     LottoGameType.ULTRA_LOTTO_658,

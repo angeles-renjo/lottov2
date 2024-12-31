@@ -10,7 +10,7 @@ interface PrizePoolResult {
 }
 
 export async function GET(
-  request: NextRequest
+  _request: NextRequest
 ): Promise<NextResponse<ApiResponse<PrizePoolResult[]>>> {
   try {
     console.log("Prize Pool API route called");

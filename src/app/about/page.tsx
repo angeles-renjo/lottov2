@@ -1,7 +1,7 @@
 "use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { Info, Shield, Users, AlertTriangle } from "lucide-react";
+import { Info, Shield, AlertTriangle } from "lucide-react";
 import LegalDisclaimer from "@/components/LegalDisclaimer";
 
 export default function AboutPage() {

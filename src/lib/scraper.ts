@@ -125,7 +125,7 @@ export class LottoScraper {
         },
       });
       return response.data;
-    } catch (error) {
+    } catch (_error) {
       throw this.handleError("FETCH_ERROR", "Failed to fetch lotto page");
     }
   }
