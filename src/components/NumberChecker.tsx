@@ -18,7 +18,6 @@ import { Button } from "./ui/button";
 export default function NumberChecker({
   gameType,
   winningNumbers,
-  drawDate,
 }: NumberCheckerProps) {
   const [numbers, setNumbers] = useState<string[]>(Array(6).fill(""));
   const [showDialog, setShowDialog] = useState(false);
